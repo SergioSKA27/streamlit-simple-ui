@@ -17,7 +17,6 @@ from streamlit import (
 # {'type': ['label_name','default_value', {'key': 'value'}]}  dict 2
 #['type','label_name','default_value', {'key': 'value'}] list
 # str, int, float, bool, Type, Tuple, List, Dict, Set
-# ('label_name','text','default_value', {'key': 'value'}) tuple
 
 class Inputs:
 
@@ -56,7 +55,7 @@ class Inputs:
     'textarea'
     ]
 
-    def __init__(self,inputconfig: Union[List, Tuple, Dict, Type],value: Optional[Type]=None,**kwargs):
+    def __init__(self,inputconfig: Union[List, Dict, Type],value: Optional[Type]=None,**kwargs):
         self._type: Union[str, int, float, bool, Type, Tuple, List, Dict, Set] = None
         self._label: Optional[str] = None
         self._value: Optional[Union[str, int, float, bool, Type, Tuple, List, Dict, Set]] = None
@@ -168,6 +167,8 @@ class Inputs:
         elif self._type == 'text_area' or self._type == 'textarea' or self._type == 'text':
             return self.render_text_area(self._label, self._value, **self._kwargs)
 
+        elif self._type == 'password':
+            return self.render_password(self._label, self._value, **self._kwargs)
         elif isinstance(self._type, list) or self._type == list:
             return self.render_selectbox(self._label, self._value, **self._kwargs)
 
@@ -190,7 +191,7 @@ class Inputs:
 
     def render_text_input(self, label: str, value: str, **kwargs):
         if label is None:
-           label = ""
+           label = "str"
         if value is None:
             value = ""
         return text_input(label, value, **kwargs)
@@ -212,60 +213,60 @@ class Inputs:
                 if isinstance(value, str):
                     value = float(value)
         if label is None:
-            label = ""
+            label = "number"
         return number_input(label, value, **kwargs)
 
     def render_date_input(self, label, value, **kwargs):
         if label is None:
-            label = ""
+            label = "date"
         if value is None:
             value = 'today'
         return date_input(label, value, **kwargs)
 
     def render_time_input(self, label, value, **kwargs):
         if label is None:
-            label = ""
+            label = "time"
         if value is None:
             value = 'now'
         return time_input(label, value, **kwargs)
 
     def render_selectbox(self, label, options, **kwargs):
         if label is None:
-            label = ""
+            label = "selectbox"
         if options is None:
             options = []
         return selectbox(label, options, **kwargs)
 
     def render_multiselect(self, label, options, **kwargs):
         if label is None:
-            label = ""
+            label = "multiselect"
         if options is None:
             options = []
         return multiselect(label, options, **kwargs)
 
     def render_checkbox(self, label, value, **kwargs):
         if label is None:
-            label = ""
+            label = "checkbox"
         if value is None:
             value = False
         return checkbox(label, value, **kwargs)
 
     def render_radio(self, label, options, **kwargs):
         if label is None:
-            label = ""
+            label = "radio"
         if options is None:
             options = []
         return radio(label, options, **kwargs)
 
     def render_file_uploader(self, label, _type, **kwargs):
         if label is None:
-            label = ""
+            label = "file uploader"
 
         return file_uploader(label, _type, **kwargs)
 
     def render_color_picker(self, label, value, **kwargs):
         if label is None:
-            label = ""
+            label = "color picker"
         return color_picker(label, value, **kwargs)
 
     def render_text_area(self, label, value, **kwargs):
@@ -281,7 +282,7 @@ class Inputs:
         - str: The value entered in the text area.
         """
         if label is None:
-            label = ""
+            label = "text area"
         if value is None:
             value = ""
         return text_area(label, value, **kwargs)
@@ -299,7 +300,7 @@ class Inputs:
         - str: The value entered in the text area.
         """
         if label is None:
-            label = ""
+            label = "password"
         if value is None:
             value = ""
         return text_input(label, value,type='password', **kwargs)
