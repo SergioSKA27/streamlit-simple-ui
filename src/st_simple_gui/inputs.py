@@ -82,16 +82,12 @@ class Inputs:
                         self._label = inputconfig[self._type][0]
                         self._value = None
                         self._kwargs = {}
-                    elif len(inputconfig[self._type]) == 2:
 
-                        self._label =inputconfig[self._type][0]
-                        self._value = None
-                        self._kwargs = {}
-                    elif len(inputconfig[self._type]) == 3:
+                    elif len(inputconfig[self._type]) == 2:
                         self._label = inputconfig[self._type][0]
                         self._value = inputconfig[self._type][1]
                         self._kwargs = {}
-                    elif len(inputconfig[self._type]) == 4:
+                    elif len(inputconfig[self._type]) == 3:
                         self._label = inputconfig[self._type][0]
                         self._value = inputconfig[self._type][1]
                         self._kwargs = inputconfig[self._type][2]
@@ -192,9 +188,9 @@ class Inputs:
         else:
             raise TypeError(f"Invalid type: {self._type}")
 
-    def render_text_input(self, label: str, value: str="", **kwargs):
+    def render_text_input(self, label: str, value: str, **kwargs):
         if label is None:
-            label = ""
+           label = ""
         if value is None:
             value = ""
         return text_input(label, value, **kwargs)

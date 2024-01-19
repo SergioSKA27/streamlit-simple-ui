@@ -5,13 +5,15 @@ st.warning('hi')
 
 
 a = Inputs({'str': {'label': 'uno', 'value': 'default_value', 'kwargs': {'key': 'value'}}})
-
-st.write((a._type,a._label,a._value,a._kwargs))
 a.render()
 
+alist = Inputs({'str': ['uno', 'default_value', {'key': 'values'}]})
+alist.render()
 
 b = Inputs({'int': {'label': 'uno', 'value': 1, 'kwargs': {'key': 'intval'}}})
 b.render()
+bl = Inputs({'int': ['uno', 1, {'key': 'intvals'}]})
+bl.render()
 
 bfloat = Inputs({'float': {'label': 'uno', 'value': 1.0, 'kwargs': {'key': 'floatval'}}})
 bfloat.render()
