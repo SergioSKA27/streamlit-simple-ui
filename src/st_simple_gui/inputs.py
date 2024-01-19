@@ -21,12 +21,40 @@ from streamlit import (
 
 class Inputs:
 
-    __TYPES__ = ['str', 'string', 'char', 'character', 'text_input',
-    'number', 'int', 'integer', 'numeric', 'num', 'number', 'number_input',
-    'float', 'double','real', 'date', 'time', 'datetime', 'selectbox',
-    'multiselect', 'checkbox', 'bool', 'boolean', 'radio', 'file_uploader',
-    'color_picker', 'text_area','file','color','image','password','text',
-    'textarea',]
+    __TYPES__ = [
+    'str',
+    'string',
+    'char',
+    'character',
+    'text_input',
+    'number',
+    'int',
+    'integer',
+    'numeric',
+    'num',
+    'number',
+    'number_input',
+    'float',
+    'double',
+    'real',
+    'date',
+    'time',
+    'datetime',
+    'selectbox',
+    'multiselect',
+    'checkbox',
+    'bool',
+    'boolean',
+    'radio',
+    'file_uploader',
+    'color_picker',
+    'text_area',
+    'file',
+    'color',
+    'password',
+    'text',
+    'textarea'
+    ]
 
     def __init__(self,inputconfig: Union[List, Tuple, Dict, Type],value: Optional[Type]=None,**kwargs):
         self._type: Union[str, int, float, bool, Type, Tuple, List, Dict, Set] = None
