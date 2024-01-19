@@ -1,5 +1,5 @@
 from __future__ import annotations
-
+from .inputs import Inputs
 
 from typing import Union, Optional, List, Tuple, Dict
 
@@ -45,7 +45,6 @@ class SimpleGui:
     def __init__(self, layout: Union[List, Tuple, Dict],layouconfig: Optional[Union[List, Tuple, Dict]] = None, **kwargs):
         self._layout = layout
         self._layoutkeys = {}
-
         self.kwargs = kwargs
 
 

@@ -14,56 +14,60 @@ from streamlit import (
     time_input,
 )
 from streamlit.runtime.state import WidgetCallback
-
+#{'type': {'name': 'text', 'value': 'default_value', 'kwargs': {'key': 'value', etc}} dict
+# {'type': ['label_name','default_value', {'key': 'value'}]}  dict 2
+#['type','label_name','default_value', {'key': 'value'}] list
+# str, int, float, bool, Type, Tuple, List, Dict, Set
+# ('label_name','text','default_value', {'key': 'value'}) tuple
 
 class Inputs:
+
+    __TYPES__ = ['str', 'string', 'char', 'character', 'text_input',
+    'number', 'int', 'integer', 'numeric', 'num', 'number', 'number_input',
+    'float', 'double','real', 'date', 'time', 'datetime', 'selectbox',
+    'multiselect', 'checkbox', 'bool', 'boolean', 'radio', 'file_uploader',
+    'color_picker', 'text_area']
+
     def __init__(self,inputconfig: Union[List, Tuple, Dict, Type,Set], on_change: Optional[WidgetCallback]=None,**kwargs):
-
+        self._type: Union[str, int, float, bool, Type, Tuple, List, Dict, Set] = None
+        self._label: Optional[str] = None
+        self._value: Optional[Union[str, int, float, bool, Type, Tuple, List, Dict, Set]] = None
+        self._kwargs: Optional[Dict] = {}
         if isinstance(inputconfig, dict):
-            #{'type': {'name': 'text', 'value': 'default_value', 'kwargs': {'key': 'value', etc}} dict
-            # {'type': ['label_name','default_value', {'key': 'value'}]}  dict 2
-            #['type','label_name','default_value', {'key': 'value'}] list
-            # str, int, float, bool, Type, Tuple, List, Dict, Set
-            # ('label_name','text','default_value', {'key': 'value'}) tuple
+            if any([key in inputconfig for key in self.__TYPES__]):
+                self._type = list(inputconfig.keys()).pop()
+                if isinstance(inputconfig[self._type], dict):
 
-            if 'type' in inputconfig:
-                self._type = inputconfig['type']
-                if isinstance(inputconfig['type'], dict):
+                    if 'label' in inputconfig[self._type]:
+                        self._label = inputconfig[self._type]['label']
 
-                    if 'label_name' in inputconfig:
-                        self._label = inputconfig['label_name']
-                    else:
-                        self._label = None
+                    if 'kwargs' in inputconfig[self._type]:
+                        self._kwargs = inputconfig[self._type]['kwargs']
 
-                    if 'kwargs' in inputconfig:
-                        self._kwargs = inputconfig['kwargs']
-                    else:
-                        self._kwargs = {}
 
-                    if 'value' in inputconfig:
-                        self._value = inputconfig['value']
-                    else:
-                        self._value = None
-                elif isinstance(inputconfig['type'], list):
-                    if len(inputconfig['type']) == 1:
-                        self._label = inputconfig['type'][0]
+                    if 'value' in inputconfig[self._type]:
+                        self._value = inputconfig[self._type]['value']
+
+                elif isinstance(inputconfig[self._type], list):
+                    if len(inputconfig[self._type]) == 1:
+                        self._label = inputconfig[self._type][0]
                         self._value = None
                         self._kwargs = {}
-                    elif len(inputconfig['type']) == 2:
+                    elif len(inputconfig[self._type]) == 2:
 
-                        self._label =inputconfig['type'][0]
+                        self._label =inputconfig[self._type][0]
                         self._value = None
                         self._kwargs = {}
-                    elif len(inputconfig['type']) == 3:
-                        self._label = inputconfig['type'][0]
-                        self._value = inputconfig['type'][1]
+                    elif len(inputconfig[self._type]) == 3:
+                        self._label = inputconfig[self._type][0]
+                        self._value = inputconfig[self._type][1]
                         self._kwargs = {}
-                    elif len(inputconfig['type']) == 4:
-                        self._label = inputconfig['type'][0]
-                        self._value = inputconfig['type'][1]
-                        self._kwargs = inputconfig['type'][2]
-                    elif len(inputconfig['type']) > 4:
-                        raise TypeError(f"Too many items in inputconfig: {inputconfig}")
+                    elif len(inputconfig[self._type]) == 4:
+                        self._label = inputconfig[self._type][0]
+                        self._value = inputconfig[self._type][1]
+                        self._kwargs = inputconfig[self._type][2]
+                    elif len(inputconfig[self._type]) > 4:
+                        raise TypeError(f"Too many items in inputconfig: {inputconfig[self._type]}")
                     else:
                         raise TypeError(f"Invalid inputconfig: {inputconfig}")
             else:
@@ -99,6 +103,7 @@ class Inputs:
             self._label = None
             self._value = None
             self._kwargs = {}
+
 
 
 
@@ -169,7 +174,9 @@ class Inputs:
 
     def render_number_input(self, label, value, **kwargs):
         if not isinstance(value, (int, float)):
-            if self._type == 'number' or self._type == 'int' or self._type == 'integer' or self._type == 'numeric' or self._type == 'num' or self._type == 'number' or self._type == 'number_input':
+            if (self._type == 'number' or self._type == 'int' or
+                    self._type == 'integer' or self._type == 'numeric' or
+                    self._type == 'num' or self._type == 'number' or self._type == 'number_input'):
                 if isinstance(value, str):
                     value = int(value)
             elif self._type == 'float' or self._type == 'double' or self._type == 'real':
@@ -210,4 +217,15 @@ class Inputs:
         return color_picker(label, value, **kwargs)
 
     def render_text_area(self, label, value, **kwargs):
+        """
+        Renders a text area input field with the specified label and initial value.
+
+        Parameters:
+        - label (str): The label for the input field.
+        - value (str): The initial value for the input field.
+        - **kwargs: Additional keyword arguments to customize the text area.
+
+        Returns:
+        - str: The value entered in the text area.
+        """
         return text_area(label, value, **kwargs)
