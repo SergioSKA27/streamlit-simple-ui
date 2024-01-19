@@ -1,4 +1,5 @@
 from __future__ import annotations
+# trunk-ignore(ruff/F401)
 from .inputs import Inputs
 
 from typing import Union, Optional, List, Tuple, Dict
