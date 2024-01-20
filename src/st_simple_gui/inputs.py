@@ -128,9 +128,6 @@ class Inputs:
             self._value = value
             self._kwargs = {}
 
-
-
-
     def render(self):
         if self._type == 'str' or self._type == 'string' or self._type == 'char' or self._type == 'character' or self._type == 'text_input':
             return self.render_text_input(self._label, self._value, **self._kwargs)
@@ -304,3 +301,31 @@ class Inputs:
         if value is None:
             value = ""
         return text_input(label, value,type='password', **kwargs)
+
+    def key(self):
+        if 'key' in self._kwargs:
+            return self._kwargs['key']
+        else:
+            return self._label if self._label is not None else self._type
+
+    def _resolve_key(self, level: int,column: Optional[int]=None)->str:
+        if 'key' in self._kwargs:
+            s = f"{level}-{self._kwargs['key']}"
+            if column is not None:
+                s = f"{s}-{column}"
+        if self._label is not None:
+            s = f"{level}-{self._label}"
+            if column is not None:
+                s = f"{s}-{column}"
+
+        if self._type is not None:
+            s = f"{level}-{self._type}"
+            if column is not None:
+                s = f"{s}-{column}"
+        else:
+            s = f"{level}"
+            if column is not None:
+                s = f"{s}-{column}"
+
+        self._kwargs['key'] = s
+        return s

@@ -20,5 +20,17 @@ e = Inputs({'selectbox': {'label': 'uno', 'value': [1,2,3], 'kwargs': {'key': 's
 
 f = Inputs({'multiselect': {'label': 'uno', 'value': [1,2,3], 'kwargs': {'key': 'multiselectval'}}})
 
-n = SimpleGui([])
-n.basic_render([[a,b],[c,d],[e,f]])
+n = SimpleGui([[a,b],
+                [c,d],
+                [e,f]
+                ])
+
+with n() as layout:
+    st.write(layout)
+
+
+SimpleGui([
+        [Inputs([],['a','b','c']),Inputs({},['a','b','c'])],
+        [Inputs((),['a','b','c']),Inputs(1,1)],
+        [Inputs(list,['a','b','c']),Inputs(str,'')]
+        ])

@@ -1,10 +1,12 @@
 from __future__ import annotations
+
+from typing import  Dict, List, Optional, Tuple, Union
+
+from streamlit import columns, session_state
+
 from .inputs import Inputs
 
-from typing import Union, Optional, List, Tuple, Dict
-
-from streamlit import columns
-
+from contextlib import contextmanager
 
 __version__ = "0.0.1"
 
@@ -47,10 +49,20 @@ class SimpleGui:
         self._layout = layout
         self._layoutkeys = {}
         self.kwargs = kwargs
+        self._layoutvars = {}
+
+
+        if isinstance(self._layout, list):
+            if isinstance(self._layout[0], list):
+                if isinstance(self._layout[0][0], Inputs):
+                    self.basic_render(self._layout)
+            elif isinstance(self._layout[0], Inputs):
+                self.basic_render(self._layout)
 
 
 
-    def _resolve_key(self, key: str,level: int )->str:
+
+    def _resolve_key(self, key: str,level: int)->str:
         return f"{level}-{key}"
 
 
@@ -62,8 +74,24 @@ class SimpleGui:
                 for e in range(len(layout[level])):
                     if isinstance(layout[level][e], Inputs):
                         with cols[e]:
+                            x = layout[level][e]._resolve_key(level, e)
+                            self._layoutkeys[x] = x
                             layout[level][e].render()
+
         except Exception as e:
             for level in range(len(layout)):
                 if isinstance(layout[level], Inputs):
                     layout[level].render()
+
+    def sync_session_state(self):
+        ns = {}
+        for k in self._layoutkeys:
+            ns[k] = session_state.get(k)
+
+        self._layoutvars = ns
+
+    @contextmanager
+    def __call__(self):
+        if self._layoutvars == {}:
+            self.sync_session_state()
+        yield self._layoutvars
