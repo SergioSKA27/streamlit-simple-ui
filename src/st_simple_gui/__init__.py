@@ -61,11 +61,6 @@ class SimpleGui:
 
 
 
-
-    def _resolve_key(self, key: str,level: int)->str:
-        return f"{level}-{key}"
-
-
     def basic_render(self, layout: Union[List, Tuple]):
     #The most basic rendering layout is a list of lists of elements. Each element in the list is rendered in its own column.
         try:
@@ -81,6 +76,8 @@ class SimpleGui:
         except Exception as e:
             for level in range(len(layout)):
                 if isinstance(layout[level], Inputs):
+                    x = layout[level]._resolve_key(level)
+                    self._layoutkeys[x] = x
                     layout[level].render()
 
     def sync_session_state(self):

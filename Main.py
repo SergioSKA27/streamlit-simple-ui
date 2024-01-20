@@ -29,8 +29,18 @@ with n() as layout:
     st.write(layout)
 
 
-SimpleGui([
+k = SimpleGui([
         [Inputs([],['a','b','c']),Inputs({},['a','b','c'])],
         [Inputs((),['a','b','c']),Inputs(1,1)],
         [Inputs(list,['a','b','c']),Inputs(str,'')]
         ])
+
+with k() as l2:
+    st.write(l2)
+
+j = SimpleGui([Inputs({'str': {'label': 'uno', 'value': 'default_value', 'kwargs': {'key': 'value'}}}),
+            Inputs({'int': {'label': 'uno', 'value': 1, 'kwargs': {'key': 'intval'}}})])
+
+
+with j() as l3:
+    st.write(l3)
