@@ -18,7 +18,7 @@ from streamlit import (
 #['type','label_name','default_value', {'key': 'value'}] list
 # str, int, float, bool, Type, Tuple, List, Dict, Set
 
-class Inputs:
+class Input:
 
     __TYPES__ = [
     'str',

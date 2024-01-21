@@ -4,9 +4,12 @@ from typing import  Dict, List, Optional, Tuple, Union
 
 from streamlit import columns, session_state
 
-from .inputs import Inputs
+from .inputs import Input
 
 from contextlib import contextmanager
+
+
+
 
 __version__ = "0.0.1"
 
@@ -20,31 +23,38 @@ __version__ = "0.0.1"
 #
 #
 #
+#All layouts are based on a base list then it can contain any
+#-------------------------------------------------------
+# layout = [
+#     [
+#        Inputs({'str': {'label': 'uno', 'value': 'default_value', 'kwargs': {'key': 'value'}}}),
+#      Inputs({'int': {'label': 'uno', 'value': 1, 'kwargs': {'key': 'intval'}}}),
+#      ... any other element of streamlit including custom elements
+#    ],
+#     [
+#       Inputs({'float': {'label': 'uno', 'value': 1.0, 'kwargs': {'key': 'floatval'}}}),
+#      Inputs({'bool': {'label': 'uno', 'value': True, 'kwargs': {'key': 'boolval'}}}),
+#      ... any other element of streamlit including custom elements
+#    ],
+#     [
+#       Inputs({'date': {'label': 'uno', 'value': 'today', 'kwargs': {'key': 'dateval'}}}),
+#      Inputs({'time': {'label': 'uno', 'value': 'now', 'kwargs': {'key': 'timeval'}}})
+#      ],
+#        ... Buttons, Selectbox,and any other element of streamlit including custom elements
+#    ] #Layout type 1 - list of lists of elements*you can use any iterable of iterables of elements
+#-------------------------------------------------------
+# layout = [
+#    Inputs({'str': {'label': 'uno', 'value': 'default_value', 'kwargs': {'key': 'value'}}}),
+#    Inputs({'int': {'label': 'uno', 'value': 1, 'kwargs': {'key': 'intval'}}}),
+#    ... any other element of streamlit including custom elements
+#    ] #Layout type 2 - list of elements*you can use any iterable of elements
+#-------------------------------------------------------
+# layout = {
+#     'str': {'label': 'uno', 'value': 'default_value', 'kwargs': {'key': 'value'}},
+#    'int': {'label': 'uno', 'value': 1, 'kwargs': {'key': 'intval'}},
 #
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-
-
-
-
-
-
-
-
-
 class SimpleGui:
+
     def __init__(self, layout: Union[List, Tuple, Dict],layouconfig: Optional[Union[List, Tuple, Dict]] = None, **kwargs):
         self._layout = layout
         self._layoutkeys = {}
@@ -54,10 +64,12 @@ class SimpleGui:
 
         if isinstance(self._layout, list):
             if isinstance(self._layout[0], list):
-                if isinstance(self._layout[0][0], Inputs):
+                if isinstance(self._layout[0][0], Input):
                     self.basic_render(self._layout)
-            elif isinstance(self._layout[0], Inputs):
+            elif isinstance(self._layout[0], Input):
                 self.basic_render(self._layout)
+
+
 
 
 
@@ -67,7 +79,7 @@ class SimpleGui:
             for level in range(len(layout)):
                 cols = columns(len(layout[level]))
                 for e in range(len(layout[level])):
-                    if isinstance(layout[level][e], Inputs):
+                    if isinstance(layout[level][e], Input):
                         with cols[e]:
                             x = layout[level][e]._resolve_key(level, e)
                             self._layoutkeys[x] = x
@@ -75,20 +87,33 @@ class SimpleGui:
 
         except Exception as e:
             for level in range(len(layout)):
-                if isinstance(layout[level], Inputs):
+                if isinstance(layout[level], Input):
                     x = layout[level]._resolve_key(level)
                     self._layoutkeys[x] = x
                     layout[level].render()
 
     def sync_session_state(self):
+        """
+        Synchronizes the session state with the layout variables.
+        This method updates the layout variables with the values stored in the session state.
+        It iterates over the layout keys and retrieves the corresponding values from the session state.
+        The updated layout variables are then stored in the `_layoutvars` attribute.
+        Returns:
+            None
+        """
         ns = {}
         for k in self._layoutkeys:
             ns[k] = session_state.get(k)
-
         self._layoutvars = ns
+
 
     @contextmanager
     def __call__(self):
+        """
+        Context manager that synchronizes the session state and yields the layout variables.
+        If the layout variables are empty, it synchronizes the session state before yielding.
+        """
         if self._layoutvars == {}:
             self.sync_session_state()
+
         yield self._layoutvars

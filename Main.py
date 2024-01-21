@@ -1,24 +1,24 @@
 import streamlit as st
-from src.st_simple_gui import Inputs, SimpleGui
+from src.st_simple_gui import Input, SimpleGui
 
 st.warning('hi')
 
 
-a = Inputs({'str': {'label': 'uno', 'value': 'default_value', 'kwargs': {'key': 'value'}}})
+a = Input({'str': {'label': 'uno', 'value': 'default_value', 'kwargs': {'key': 'value'}}})
 
-b = Inputs({'int': {'label': 'uno', 'value': 1, 'kwargs': {'key': 'intval'}}})
+b = Input({'int': {'label': 'uno', 'value': 1, 'kwargs': {'key': 'intval'}}})
 
-bfloat = Inputs({'float': {'label': 'uno', 'value': 1.0, 'kwargs': {'key': 'floatval'}}})
+bfloat = Input({'float': {'label': 'uno', 'value': 1.0, 'kwargs': {'key': 'floatval'}}})
 
-c = Inputs({'bool': {'label': 'uno', 'value': True, 'kwargs': {'key': 'boolval'}}})
+c = Input({'bool': {'label': 'uno', 'value': True, 'kwargs': {'key': 'boolval'}}})
 
-d = Inputs({'date': {'label': 'uno', 'value': 'today', 'kwargs': {'key': 'dateval'}}})
+d = Input({'date': {'label': 'uno', 'value': 'today', 'kwargs': {'key': 'dateval'}}})
 
-dtime = Inputs({'time': {'label': 'uno', 'value': 'now', 'kwargs': {'key': 'timeval'}}})
+dtime = Input({'time': {'label': 'uno', 'value': 'now', 'kwargs': {'key': 'timeval'}}})
 
-e = Inputs({'selectbox': {'label': 'uno', 'value': [1,2,3], 'kwargs': {'key': 'selectval'}}})
+e = Input({'selectbox': {'label': 'uno', 'value': [1,2,3], 'kwargs': {'key': 'selectval'}}})
 
-f = Inputs({'multiselect': {'label': 'uno', 'value': [1,2,3], 'kwargs': {'key': 'multiselectval'}}})
+f = Input({'multiselect': {'label': 'uno', 'value': [1,2,3], 'kwargs': {'key': 'multiselectval'}}})
 
 n = SimpleGui([[a,b],
                 [c,d],
@@ -30,16 +30,16 @@ with n() as layout:
 
 
 k = SimpleGui([
-        [Inputs([],['a','b','c']),Inputs({},['a','b','c'])],
-        [Inputs((),['a','b','c']),Inputs(1,1)],
-        [Inputs(list,['a','b','c']),Inputs(str,'')]
+        [Input([],['a','b','c']),Input({},['a','b','c'])],
+        [Input((),['a','b','c']),Input(1,1)],
+        [Input(list,['a','b','c']),Input(str,'')]
         ])
 
 with k() as l2:
     st.write(l2)
 
-j = SimpleGui([Inputs({'str': {'label': 'uno', 'value': 'default_value', 'kwargs': {'key': 'value'}}}),
-            Inputs({'int': {'label': 'uno', 'value': 1, 'kwargs': {'key': 'intval'}}})])
+j = SimpleGui([Input({'str': {'label': 'uno', 'value': 'default_value', 'kwargs': {'key': 'value'}}}),
+            Input({'int': {'label': 'uno', 'value': 1, 'kwargs': {'key': 'intval'}}})])
 
 
 with j() as l3:
