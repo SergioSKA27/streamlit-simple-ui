@@ -4,6 +4,12 @@ from streamlit import write,markdown,text,title,header,subheader,caption,code,la
 
 
 
+
+
+#Input types
+# {'write': {'args': ['body', 'sep', 'end', 'file', ], kwargs: {unsafe_allow_html: True}}}
+# {'write': [['body', 'sep', 'end', 'file',... ], {unsafe_allow_html: True}]
+
 class Writer:
     def __init__(self,writerconfig: Union[List, Tuple, Dict,Set,str] = None, **kwargs):
         self._writerconfig = writerconfig

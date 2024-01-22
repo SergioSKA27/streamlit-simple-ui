@@ -1,5 +1,5 @@
 import streamlit as st
-from src.st_simple_gui import Input, SimpleGui
+from src.st_simple_gui import Input, SimpleUI, Writer
 
 st.warning('hi')
 
@@ -20,7 +20,7 @@ e = Input({'selectbox': {'label': 'uno', 'value': [1,2,3], 'kwargs': {'key': 'se
 
 f = Input({'multiselect': {'label': 'uno', 'value': [1,2,3], 'kwargs': {'key': 'multiselectval'}}})
 
-n = SimpleGui([[a,b],
+n = SimpleUI([[a,b],
                 [c,d],
                 [e,f]
                 ])
@@ -29,7 +29,7 @@ with n() as layout:
     st.write(layout)
 
 
-k = SimpleGui([
+k = SimpleUI([
         [Input([],['a','b','c']),Input({},['a','b','c'])],
         [Input((),['a','b','c']),Input(1,1)],
         [Input(list,['a','b','c']),Input(str,'')]
@@ -38,9 +38,13 @@ k = SimpleGui([
 with k() as l2:
     st.write(l2)
 
-j = SimpleGui([Input({'str': {'label': 'uno', 'value': 'default_value', 'kwargs': {'key': 'value'}}}),
+j = SimpleUI([Input({'str': {'label': 'uno', 'value': 'default_value', 'kwargs': {'key': 'value'}}}),
             Input({'int': {'label': 'uno', 'value': 1, 'kwargs': {'key': 'intval'}}})])
 
 
 with j() as l3:
     st.write(l3)
+
+
+
+Writer()

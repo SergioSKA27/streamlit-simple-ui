@@ -6,6 +6,9 @@ from streamlit import columns, session_state
 
 from .inputs import Input
 
+# trunk-ignore(ruff/F401)
+from .writers import Writer
+
 from contextlib import contextmanager
 
 
@@ -44,7 +47,7 @@ __version__ = "0.0.1"
 #    ] #Layout type 1 - list of lists of elements*you can use any iterable of iterables of elements
 #-------------------------------------------------------
 # layout = [
-#    Inputs({'str': {'label': 'uno', 'value': 'default_value', 'kwargs': {'key': 'value'}}}),
+#    Inputs({'str': {'label': 'uno', 'value': 'default_value', 'kwargs': {'key': 'value'}}}),# Includes any Input type see Inputs class for more info
 #    Inputs({'int': {'label': 'uno', 'value': 1, 'kwargs': {'key': 'intval'}}}),
 #    ... any other element of streamlit including custom elements
 #    ] #Layout type 2 - list of elements*you can use any iterable of elements
@@ -52,8 +55,22 @@ __version__ = "0.0.1"
 # layout = {
 #     'str': {'label': 'uno', 'value': 'default_value', 'kwargs': {'key': 'value'}},
 #    'int': {'label': 'uno', 'value': 1, 'kwargs': {'key': 'intval'}},
+#   ... any other element of streamlit including custom elements
+#   } #Layout type 3 - dict of elements
 #
-class SimpleGui:
+# layout = {
+#       {
+#        'str': {'label': 'uno', 'value': 'default_value', 'kwargs': {'key': 'value'}},
+#       'int': {'label': 'uno', 'value': 1, 'kwargs': {'key': 'intval'}}
+#       },
+#       {
+#       'float': {'label': 'uno', 'value': 1.0, 'kwargs': {'key': 'floatval'}},
+#       'bool': {'label': 'uno', 'value': True, 'kwargs': {'key': 'boolval'}}
+#       },
+#      ... any other element of streamlit including custom elements
+#    } #Layout type 4 - dict of dicts of elements
+
+class SimpleUI:
 
     def __init__(self, layout: Union[List, Tuple, Dict],layouconfig: Optional[Union[List, Tuple, Dict]] = None, **kwargs):
         self._layout = layout
@@ -117,3 +134,19 @@ class SimpleGui:
             self.sync_session_state()
 
         yield self._layoutvars
+
+    def __getitem__(self, item: str):
+        """
+        Returns the layout variable corresponding to the given key.
+        Args:
+            item: key of the layout variable to return.
+        Returns:
+            The layout variable corresponding to the given key.
+        """
+        if self._layoutvars == {}:
+            self.sync_session_state()
+
+            if item in self._layoutvars or any([item in v.split('-') for v in self._layoutvars.keys()]):
+                return self._layoutvars[item]
+            else:
+                raise KeyError(f"Layout variable {item} does not exist.")
