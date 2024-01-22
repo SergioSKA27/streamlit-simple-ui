@@ -140,8 +140,13 @@ class SimpleUI:
 
     def basic_render(self, layout: Union[List, Tuple]):
     #The most basic rendering layout is a list of lists of elements. Each element in the list is rendered in its own column.
-        try:
-            for level in range(len(layout)):
+
+        for level in range(len(layout)):
+            if isinstance(layout[level], Input):
+                x = layout[level]._resolve_key(level)
+                self._layoutkeys[x] = x
+                layout[level].render()
+            elif isinstance(layout[level], list):
                 cols = columns(len(layout[level]))
                 for e in range(len(layout[level])):
                     if isinstance(layout[level][e], Input):
@@ -150,12 +155,6 @@ class SimpleUI:
                             self._layoutkeys[x] = x
                             layout[level][e].render()
 
-        except Exception as e:
-            for level in range(len(layout)):
-                if isinstance(layout[level], Input):
-                    x = layout[level]._resolve_key(level)
-                    self._layoutkeys[x] = x
-                    layout[level].render()
 
     def sync_session_state(self):
         """
@@ -199,7 +198,7 @@ class SimpleUI:
             else:
                 raise KeyError(f"Layout variable {item} does not exist.")
 
-    def _parse_dict(self, layout: Dict):
+    def _parse_dict(self, _type: str, _conf: Union[Dict, List]):
         """
         Parses a layout dictionary.
 
@@ -208,9 +207,67 @@ class SimpleUI:
         Returns:
             The parsed layout dictionary.
         """
-        lay = []
+        if _type in self.__INPUT_TYPES__:
+            return Input({_type: _conf})
+        else:
+            raise ValueError(f"type {_type} is not valid.")
 
-        if isinstance(layout, dict):
-            for k , v in layout.items():
-                if k in self.__INPUT_TYPES__:
-                    lay.append(Input({k:v}))
+    def _parse_list(self, conf: Union[List, Tuple]):
+        """
+        Parses a layout list.
+
+        Args:
+            layout: layout config to parse.
+        Returns:
+            The parsed layout list.
+        """
+        if conf[0] in self.__INPUT_TYPES__:
+            return Input(conf)
+        else:
+            raise ValueError(f"type {conf[0]} is not valid.")
+
+    def _parse_layout(self, layout: Union[List, Tuple, Dict]):
+        """
+        Parses a layout.
+
+        Args:
+            layout: layout to parse.
+        Returns:
+            The parsed layout.
+        """
+        lay = []
+        if isinstance(layout, list):
+            #This parses inputs like this: [....]
+            for level in range(len(layout)):
+                if isinstance(layout[level], list):
+                    #This parses inputs like this: [[...],[...],[...]]
+                    if len(layout[level]) == 1:
+                        if isinstance(layout[level][0], dict):
+                            #This parses inputs like this: [[{...}]]
+                            for k, v in layout[level][0].items():
+                                lay.append(self._parse_dict(k, v))
+                        elif isinstance(layout[level][0], list):
+                            #This parses inputs like this: [[[]]]
+                            lay.append(self._parse_list(layout[level][0]))
+                    else:
+                        c = []
+                        for cols in range(len(layout[level])):
+                            if isinstance(layout[level][cols], dict):
+                                #This parses inputs like this: [[..., {...}, ....]]
+                                if len(layout[level][cols]) == 1:
+                                    for k, v in layout[level][cols].items():
+                                        c.append(self._parse_dict(k, v))
+                                else:
+                                    raise ValueError(f"Invalid layout dimensions at level {level}.")
+                            elif isinstance(layout[level][cols], list):
+                                #This parses inputs like this: [[..., [...], ....]]
+                                c.append(self._parse_list(layout[level][cols]))
+
+                            elif isinstance(layout[level][cols], Input):
+                                c.append(layout[level][cols])
+
+                elif isinstance(layout[level], dict):
+                    for k, v in layout[level].items():
+                        c.append(self._parse_dict(k, v))
+
+                lay.append(c)

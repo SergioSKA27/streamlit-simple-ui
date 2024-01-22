@@ -1,5 +1,4 @@
 from typing import Dict, List, Optional, Set, Tuple, Type, Union
-
 from streamlit import (
     checkbox,
     color_picker,
@@ -16,7 +15,7 @@ from streamlit import (
 )
 #{'type': {'name': 'text', 'value': 'default_value', 'kwargs': {'key': 'value', etc}} dict
 # {'type': ['label_name','default_value', {'key': 'value'}]}  dict 2
-#['type','label_name','default_value', {'key': 'value'}] list
+#['type','label_name','default_value', {'key': 'value'}] list or tuple
 # str, int, float, bool, Type, Tuple, List, Dict, Set
 
 class Input:
@@ -127,11 +126,39 @@ class Input:
                 raise TypeError(f"Too many items in inputconfig: {inputconfig}")
             else:
                 raise TypeError(f"Invalid inputconfig: {inputconfig}")
+
+        elif isinstance(inputconfig, tuple) and value is None:
+            if len(inputconfig) == 1:
+                self._type = inputconfig[0]
+                self._label = None
+                self._value = None
+                self._kwargs = {}
+            if len(inputconfig) == 2:
+                self._type = inputconfig[0]
+                self._label = inputconfig[1]
+                self._value = None
+                self._kwargs = {}
+            if len(inputconfig) == 3:
+                self._type = inputconfig[0]
+                self._label = inputconfig[1]
+                self._value = inputconfig[2]
+                self._kwargs = {}
+            elif len(inputconfig) == 4:
+                self._type = inputconfig[0]
+                self._label = inputconfig[1]
+                self._value = inputconfig[2]
+                self._kwargs = inputconfig[3]
+            elif len(inputconfig) > 4:
+                raise TypeError(f"Too many items in inputconfig: {inputconfig}")
+            else:
+                raise TypeError(f"Invalid inputconfig: {inputconfig}")
         else:
             self._type = inputconfig
             self._label = None
             self._value = value
-            self._kwargs = {}
+            if kwargs:
+                self._kwargs = kwargs
+
 
     def render(self):
         if self._type == 'str' or self._type == 'string' or self._type == 'char' or self._type == 'character' or self._type == 'text_input':
@@ -329,6 +356,7 @@ class Input:
             return self._kwargs['key']
         else:
             return self._label if self._label is not None else self._type
+
 
     def _resolve_key(self, level: int,column: Optional[int]=None)->str:
         if 'key' in self._kwargs:
