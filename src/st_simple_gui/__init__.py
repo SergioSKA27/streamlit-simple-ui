@@ -68,9 +68,57 @@ __version__ = "0.0.1"
 #       'bool': {'label': 'uno', 'value': True, 'kwargs': {'key': 'boolval'}}
 #       },
 #      ... any other element of streamlit including custom elements
-#    } #Layout type 4 - dict of dicts of elements
+#    } #Layout type 4 - set of dicts of elements
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
 
 class SimpleUI:
+
+    __INPUT_TYPES__ = [
+    'str',
+    'string',
+    'char',
+    'character',
+    'text_input',
+    'number',
+    'int',
+    'integer',
+    'numeric',
+    'num',
+    'number',
+    'number_input',
+    'float',
+    'double',
+    'real',
+    'date',
+    'time',
+    'datetime',
+    'selectbox',
+    'multiselect',
+    'checkbox',
+    'bool',
+    'boolean',
+    'radio',
+    'file_uploader',
+    'color_picker',
+    'text_area',
+    'file',
+    'color',
+    'password',
+    'text',
+    'textarea',
+    'camera_input'
+    ]
+
 
     def __init__(self, layout: Union[List, Tuple, Dict],layouconfig: Optional[Union[List, Tuple, Dict]] = None, **kwargs):
         self._layout = layout
@@ -150,3 +198,19 @@ class SimpleUI:
                 return self._layoutvars[item]
             else:
                 raise KeyError(f"Layout variable {item} does not exist.")
+
+    def _parse_dict(self, layout: Dict):
+        """
+        Parses a layout dictionary.
+
+        Args:
+            layout: layout dictionary to parse.
+        Returns:
+            The parsed layout dictionary.
+        """
+        lay = []
+
+        if isinstance(layout, dict):
+            for k , v in layout.items():
+                if k in self.__INPUT_TYPES__:
+                    lay.append(Input({k:v}))

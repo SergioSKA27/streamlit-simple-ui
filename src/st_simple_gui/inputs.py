@@ -12,6 +12,7 @@ from streamlit import (
     text_area,
     text_input,
     time_input,
+    camera_input
 )
 #{'type': {'name': 'text', 'value': 'default_value', 'kwargs': {'key': 'value', etc}} dict
 # {'type': ['label_name','default_value', {'key': 'value'}]}  dict 2
@@ -52,7 +53,11 @@ class Input:
     'color',
     'password',
     'text',
-    'textarea'
+    'textarea',
+    'camera_input',
+    'camera',
+    'list',
+    'multi'
     ]
 
     def __init__(self,inputconfig: Union[List, Dict, Type],value: Optional[Type]=None,**kwargs):
@@ -143,10 +148,10 @@ class Input:
         elif self._type == 'time':
             return self.render_time_input(self._label, self._value, **self._kwargs)
 
-        elif self._type == 'selectbox':
+        elif self._type == 'selectbox' or self._type == 'list' :
             return self.render_selectbox(self._label, self._value, **self._kwargs)
 
-        elif self._type == 'multiselect':
+        elif self._type == 'multiselect' or self._type == 'multi':
             return self.render_multiselect(self._label, self._value, **self._kwargs)
 
         elif self._type == 'checkbox' or self._type == 'bool' or self._type == 'boolean':
@@ -158,7 +163,7 @@ class Input:
         elif self._type == 'file_uploader' or self._type == 'file':
             return self.render_file_uploader(self._label, self._value, **self._kwargs)
 
-        elif self._type == 'color_picker':
+        elif self._type == 'color_picker' or self._type == 'color':
             return self.render_color_picker(self._label, self._value, **self._kwargs)
 
         elif self._type == 'text_area' or self._type == 'textarea' or self._type == 'text':
@@ -166,6 +171,8 @@ class Input:
 
         elif self._type == 'password':
             return self.render_password(self._label, self._value, **self._kwargs)
+        elif self._type == 'camera_input' or self._type == 'camera':
+            return self.render_camera_input(self._label, **self._kwargs)
         elif isinstance(self._type, list) or self._type == list:
             return self.render_selectbox(self._label, self._value, **self._kwargs)
 
@@ -211,7 +218,7 @@ class Input:
                     value = float(value)
         if label is None:
             label = "number"
-        return number_input(label, value, **kwargs)
+        return number_input(label, value=value, **kwargs)
 
     def render_date_input(self, label, value, **kwargs):
         if label is None:
@@ -301,6 +308,21 @@ class Input:
         if value is None:
             value = ""
         return text_input(label, value,type='password', **kwargs)
+
+    def render_camera_input(self, label, **kwargs):
+        """
+        Renders a camera input field with the specified label and initial value.
+
+        Parameters:
+        - label (str): The label for the input field.
+        - **kwargs: Additional keyword arguments to customize the text area.
+
+        Returns:
+        - str: The value entered in the text area.
+        """
+        if label is None:
+            label = "camera"
+        return camera_input(label, **kwargs)
 
     def key(self):
         if 'key' in self._kwargs:
