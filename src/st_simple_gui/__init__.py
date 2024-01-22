@@ -242,32 +242,57 @@ class SimpleUI:
                 if isinstance(layout[level], list):
                     #This parses inputs like this: [[...],[...],[...]]
                     if len(layout[level]) == 1:
+                        #This parses inputs like this: [...,[one element],...]
                         if isinstance(layout[level][0], dict):
-                            #This parses inputs like this: [[{...}]]
-                            for k, v in layout[level][0].items():
-                                lay.append(self._parse_dict(k, v))
+                            #This parses inputs like this: [[{config}]]
+                            if len(layout[level][0]) == 1:
+                                for k, v in layout[level][0].items():
+                                    lay.append(self._parse_dict(k, v))
+                            else:
+                                raise ValueError(f"Invalid layout dimensions at level {level}."
+                                                            f"Multiple configs found in a single element {layout[level][0]}")
+
                         elif isinstance(layout[level][0], list):
-                            #This parses inputs like this: [[[]]]
+                            #This parses inputs like this: [[[config]]]
                             lay.append(self._parse_list(layout[level][0]))
+
+                        elif isinstance(layout[level][0], Input):
+                            #This parses inputs like this: [[Input]]
+                            lay.append(layout[level][0])
+
                     else:
+                        #This parses inputs like this: [..., [one, two, three], ...]
                         c = []
                         for cols in range(len(layout[level])):
                             if isinstance(layout[level][cols], dict):
-                                #This parses inputs like this: [[..., {...}, ....]]
+                                #This parses inputs like this: [[..., {config}, ....]]
                                 if len(layout[level][cols]) == 1:
                                     for k, v in layout[level][cols].items():
                                         c.append(self._parse_dict(k, v))
                                 else:
-                                    raise ValueError(f"Invalid layout dimensions at level {level}.")
+                                    raise ValueError(f"Invalid layout dimensions at level {level}."
+                                                            f"Multiple configs found in a single element {layout[level][0]}")
+
                             elif isinstance(layout[level][cols], list):
-                                #This parses inputs like this: [[..., [...], ....]]
+                                #This parses inputs like this: [[..., [config], ....]]
                                 c.append(self._parse_list(layout[level][cols]))
 
                             elif isinstance(layout[level][cols], Input):
                                 c.append(layout[level][cols])
 
-                elif isinstance(layout[level], dict):
-                    for k, v in layout[level].items():
-                        c.append(self._parse_dict(k, v))
+                        lay.append(c)
 
-                lay.append(c)
+                elif isinstance(layout[level], dict):
+                    #This parses inputs like this: [{config, config, config}]
+                    c = []
+                    if len(layout[level]) == 1:
+                        for k, v in layout[level].items():
+                            lay.append(self._parse_dict(k, v))
+                    else:
+                        for k, v in layout[level].items():
+                            c.append(self._parse_dict(k, v))
+                        lay.append(c)
+
+                elif isinstance(layout[level], Input):
+                    #This parses inputs like this: [..., Input, ...]
+                    lay.append(layout[level])
